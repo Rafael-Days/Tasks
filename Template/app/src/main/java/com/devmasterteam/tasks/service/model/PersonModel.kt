@@ -1,4 +1,7 @@
 package com.devmasterteam.tasks.service.model
 
-class PersonModel {
-}
+data class PersonModel(
+    val token: String,
+    val personKey: String,
+    val name: String
+)
