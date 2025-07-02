@@ -8,6 +8,7 @@ import androidx.navigation.findNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.ui.*
 import com.devmasterteam.tasks.R
 import com.devmasterteam.tasks.databinding.ActivityMainBinding
@@ -53,6 +54,7 @@ class MainActivity : AppCompatActivity() {
 
         navView.setNavigationItemSelectedListener {
             if (it.itemId == R.id.nav_logout) {
+                viewModel.loggout()
                 startActivity(Intent(applicationContext, LoginActivity::class.java))
                 finish()
             } else {

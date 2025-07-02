@@ -54,12 +54,20 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun observe() {
-
+        viewModel.create.observe(this){
+            if(it.status()){
+                startActivity(Intent(applicationContext, MainActivity::class.java))
+            } else {
+                Toast.makeText(applicationContext, it.message(), Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun handleSave() {
         val name = binding.editName.text.toString()
         val email = binding.editEmail.text.toString()
         val password = binding.editPassword.text.toString()
+
+        viewModel.create(name, email, password)
     }
 }
