@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.devmasterteam.tasks.service.constants.TaskConstants
 import com.devmasterteam.tasks.service.model.ValidationModel
 import com.devmasterteam.tasks.service.repository.PersonRepositoty
+import com.devmasterteam.tasks.service.repository.PriorityRepository
 import com.devmasterteam.tasks.service.repository.local.PreferencesManager
 import com.devmasterteam.tasks.view.LoginActivity
 import com.google.gson.Gson
@@ -15,8 +16,8 @@ import kotlinx.coroutines.launch
 
 class LoginViewModel(application: Application) : BaseAndroidViewModel(application) {
     private val preferencesManager = PreferencesManager(application.applicationContext)
-
     private val personRepositoty = PersonRepositoty()
+    private val priorityRepository = PriorityRepository(application.applicationContext)
 
     private val _login = MutableLiveData<ValidationModel>()
     val login: LiveData<ValidationModel> = _login
@@ -41,7 +42,15 @@ class LoginViewModel(application: Application) : BaseAndroidViewModel(applicatio
             val token = preferencesManager.get(TaskConstants.SHARED.TOKEN_KEY)
             val personKey = preferencesManager.get(TaskConstants.SHARED.PERSON_KEY)
 
-            _loggedUser.value = (token != "" && personKey != "")
+            val logged = (token != "" && personKey != "")
+            _loggedUser.value = logged
+
+            if(!logged){
+                val response = priorityRepository.getList()
+                if(response.isSuccessful && response.body() != null){
+                    priorityRepository.save(response.body()!!)
+                }
+            }
         }
     }
 }
