@@ -21,6 +21,10 @@ class PriorityRepository(context: Context) {
         return database.list()
     }
 
+    suspend fun getDescription(id: Int): String {
+        return database.getDescription(id)
+    }
+
     suspend fun save(list: List<PriorityModel>){
         database.clear()
         database.save(list)

@@ -20,6 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:textColor="@color/purple_500"
         android:text="@string/hint_description"
         app:layout_constraintStart_toEndOf="@id/image_task"
         app:layout_constraintTop_toTopOf="parent" />
@@ -29,6 +30,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:textColor="@color/purple_500"
         android:layout_marginTop="8dp"
         android:text="@string/label_priority"
         android:textStyle="bold"
@@ -39,6 +41,7 @@
         android:id="@+id/text_due_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/purple_500"
         android:text="@string/label_due_date"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"

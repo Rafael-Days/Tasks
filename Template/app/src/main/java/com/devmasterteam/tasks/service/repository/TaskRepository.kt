@@ -17,7 +17,7 @@ class TaskRepository {
         return remote.list()
     }
 
-    suspend fun listNest(): Response<List<TaskModel>> {
+    suspend fun listNext(): Response<List<TaskModel>> {
         return remote.listNext()
     }
 
