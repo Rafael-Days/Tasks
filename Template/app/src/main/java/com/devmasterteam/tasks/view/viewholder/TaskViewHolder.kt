@@ -12,7 +12,8 @@ import java.util.Locale
 class TaskViewHolder(private val itemBinding: ItemTaskListBinding, val listener: TaskListener) :
     RecyclerView.ViewHolder(itemBinding.root) {
 
-        private val simpleDataFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        private val inputDataFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        private val outputDataFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
     /**
      * Atribui valores aos elementos de interface e também eventos
@@ -20,8 +21,8 @@ class TaskViewHolder(private val itemBinding: ItemTaskListBinding, val listener:
     fun bindData(task: TaskModel) {
 
         itemBinding.textDescription.text = task.description
-        val date = simpleDataFormat.parse(task.dueDate)
-        itemBinding.textDueDate.text = simpleDataFormat.format(date!!)
+        val date = inputDataFormat.parse(task.dueDate)
+        itemBinding.textDueDate.text = outputDataFormat.format(date!!)
 
         if(task.complete){
             itemBinding.imageTask.setImageResource(R.drawable.ic_done)

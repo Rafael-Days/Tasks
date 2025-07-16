@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.devmasterteam.tasks.service.constants.TaskConstants
+import com.devmasterteam.tasks.service.exception.NoInternetException
 import com.devmasterteam.tasks.service.model.ValidationModel
 import com.devmasterteam.tasks.service.repository.PersonRepositoty
 import com.devmasterteam.tasks.service.repository.PriorityRepository
@@ -17,7 +18,7 @@ import kotlinx.coroutines.launch
 
 class LoginViewModel(application: Application) : BaseAndroidViewModel(application) {
     private val preferencesManager = PreferencesManager(application.applicationContext)
-    private val personRepositoty = PersonRepositoty()
+    private val personRepositoty = PersonRepositoty(application.applicationContext)
     private val priorityRepository = PriorityRepository(application.applicationContext)
 
     private val _login = MutableLiveData<ValidationModel>()
@@ -28,16 +29,20 @@ class LoginViewModel(application: Application) : BaseAndroidViewModel(applicatio
 
     fun login(email: String, password: String){
         viewModelScope.launch {
-            val response = personRepositoty.login(email, password)
-            if(response.isSuccessful && response.body() != null){
-                val personModel = response.body()!!
+            try {
+                val response = personRepositoty.login(email, password)
+                if(response.isSuccessful && response.body() != null){
+                    val personModel = response.body()!!
 
-                RetrofitClient.addHeaders(personModel.token, personModel.personKey)
+                    RetrofitClient.addHeaders(personModel.token, personModel.personKey)
 
-                super.saveUserAuthentication(personModel)
-                _login.value = ValidationModel()
-            } else {
-                _login.value = errorMenssage(response)
+                    super.saveUserAuthentication(personModel)
+                    _login.value = ValidationModel()
+                } else {
+                    _login.value = errorMenssage(response)
+                }
+            } catch (e: NoInternetException){
+                _login.value = ValidationModel(e.errorMessage)
             }
         }
     }

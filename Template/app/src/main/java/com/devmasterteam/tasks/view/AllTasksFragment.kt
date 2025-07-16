@@ -30,7 +30,7 @@ class AllTasksFragment : Fragment() {
 
         taskFilter = requireArguments().getInt(TaskConstants.BUNDLE.TASKFILTER, 0)
 
-        val taskListener = object : TaskListener{
+        val taskListener = object : TaskListener {
             override fun onListClick(id: Int) {
                 TODO("Not yet implemented")
             }
@@ -40,13 +40,12 @@ class AllTasksFragment : Fragment() {
             }
 
             override fun onCompleteClick(id: Int) {
-                TODO("Not yet implemented")
+                viewModel.status(id, true)
             }
 
             override fun onUndoClick(id: Int) {
-                TODO("Not yet implemented")
+                viewModel.status(id, false)
             }
-
         }
 
         adapter.attachListener(taskListener)
@@ -68,7 +67,7 @@ class AllTasksFragment : Fragment() {
     }
 
     private fun observe() {
-        viewModel.tasks.observe(viewLifecycleOwner){
+        viewModel.tasks.observe(viewLifecycleOwner) {
             adapter.updateTasks(it)
         }
     }
