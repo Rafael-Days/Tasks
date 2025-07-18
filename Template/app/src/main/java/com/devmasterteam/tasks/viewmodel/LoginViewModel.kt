@@ -1,19 +1,16 @@
 package com.devmasterteam.tasks.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.devmasterteam.tasks.service.constants.TaskConstants
-import com.devmasterteam.tasks.service.exception.NoInternetException
 import com.devmasterteam.tasks.service.model.ValidationModel
 import com.devmasterteam.tasks.service.repository.PersonRepositoty
 import com.devmasterteam.tasks.service.repository.PriorityRepository
 import com.devmasterteam.tasks.service.repository.local.PreferencesManager
 import com.devmasterteam.tasks.service.repository.remote.RetrofitClient
-import com.devmasterteam.tasks.view.LoginActivity
-import com.google.gson.Gson
 import kotlinx.coroutines.launch
 
 class LoginViewModel(application: Application) : BaseAndroidViewModel(application) {
@@ -27,11 +24,11 @@ class LoginViewModel(application: Application) : BaseAndroidViewModel(applicatio
     private val _loggedUser = MutableLiveData<Boolean>()
     val loggedUser: LiveData<Boolean> = _loggedUser
 
-    fun login(email: String, password: String){
+    fun login(email: String, password: String) {
         viewModelScope.launch {
             try {
                 val response = personRepositoty.login(email, password)
-                if(response.isSuccessful && response.body() != null){
+                if (response.isSuccessful && response.body() != null) {
                     val personModel = response.body()!!
 
                     RetrofitClient.addHeaders(personModel.token, personModel.personKey)
@@ -39,15 +36,15 @@ class LoginViewModel(application: Application) : BaseAndroidViewModel(applicatio
                     super.saveUserAuthentication(personModel)
                     _login.value = ValidationModel()
                 } else {
-                    _login.value = errorMenssage(response)
+                    _login.value = parseErrorMenssage(response)
                 }
-            } catch (e: NoInternetException){
-                _login.value = ValidationModel(e.errorMessage)
+            } catch (e: Exception) {
+                _login.value = handleException(e)
             }
         }
     }
 
-    fun verifyUserLogged(){
+    fun verifyUserLogged() {
         viewModelScope.launch {
             val token = preferencesManager.get(TaskConstants.SHARED.TOKEN_KEY)
             val personKey = preferencesManager.get(TaskConstants.SHARED.PERSON_KEY)
@@ -57,10 +54,14 @@ class LoginViewModel(application: Application) : BaseAndroidViewModel(applicatio
             val logged = (token != "" && personKey != "")
             _loggedUser.value = logged
 
-            if(!logged){
-                val response = priorityRepository.getList()
-                if(response.isSuccessful && response.body() != null){
-                    priorityRepository.save(response.body()!!)
+            if (!logged) {
+                try {
+                    val response = priorityRepository.getList()
+                    if (response.isSuccessful && response.body() != null) {
+                        priorityRepository.save(response.body()!!)
+                    }
+                }catch (e:Exception){
+                    Log.e("LoginViewModel", e.message.toString())
                 }
             }
         }

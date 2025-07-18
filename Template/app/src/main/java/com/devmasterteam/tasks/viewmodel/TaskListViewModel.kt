@@ -12,13 +12,16 @@ import com.devmasterteam.tasks.service.repository.PriorityRepository
 import com.devmasterteam.tasks.service.repository.TaskRepository
 import kotlinx.coroutines.launch
 
-class TaskListViewModel(application: Application) : AndroidViewModel(application) {
+class TaskListViewModel(application: Application) : BaseAndroidViewModel(application) {
 
-    private val taskRepository = TaskRepository()
+    private val taskRepository = TaskRepository(application.applicationContext)
     private val priorityRepository = PriorityRepository(application.applicationContext)
 
     private val _tasks = MutableLiveData<List<TaskModel>>()
     val tasks: LiveData<List<TaskModel>> = _tasks
+
+    private val _taskDeleted = MutableLiveData<ValidationModel>()
+    val taskDeleted: LiveData<ValidationModel> = _taskDeleted
 
     private var taskFilter = TaskConstants.FILTER.ALL
 
@@ -39,6 +42,20 @@ class TaskListViewModel(application: Application) : AndroidViewModel(application
                 }
 
                 _tasks.value = result
+            }
+        }
+    }
+
+    fun delete(taskId: Int){
+        viewModelScope.launch {
+            try {
+                val response = taskRepository.delete(taskId)
+                if(response.isSuccessful && response.body() != null){
+                    list(taskFilter)
+                    _taskDeleted.value = ValidationModel()
+                }
+            }catch (e:Exception){
+                _taskDeleted.value = handleException(e)
             }
         }
     }

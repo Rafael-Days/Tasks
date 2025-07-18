@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.DatePicker
@@ -83,6 +84,19 @@ class TaskFormActivity : AppCompatActivity(), View.OnClickListener,
             val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, list)
 
             binding.spinnerPriority.adapter = adapter
+        }
+
+        viewModel.taskSaved.observe(this) {
+            if (it.status()) {
+                Toast.makeText(
+                    applicationContext,
+                    getString(R.string.msg_task_created),
+                    Toast.LENGTH_SHORT
+                ).show()
+                finish()
+            } else {
+                Toast.makeText(applicationContext, it.message(), Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

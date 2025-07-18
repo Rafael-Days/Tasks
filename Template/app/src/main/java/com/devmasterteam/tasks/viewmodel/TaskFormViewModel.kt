@@ -1,25 +1,38 @@
 package com.devmasterteam.tasks.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.devmasterteam.tasks.service.model.TaskModel
+import com.devmasterteam.tasks.service.model.ValidationModel
 import com.devmasterteam.tasks.service.repository.PriorityRepository
 import com.devmasterteam.tasks.service.repository.TaskRepository
 import kotlinx.coroutines.launch
 
-class TaskFormViewModel(application: Application) : AndroidViewModel(application) {
+class TaskFormViewModel(application: Application) : BaseAndroidViewModel(application) {
 
     private val priorityRepository = PriorityRepository(application.applicationContext)
-    private val taskRepository = TaskRepository()
+    private val taskRepository = TaskRepository(application.applicationContext)
 
     val priorityList = priorityRepository.list().asLiveData()
 
+    private val _taskSaved = MutableLiveData<ValidationModel>()
+    val taskSaved: LiveData<ValidationModel> = _taskSaved
+
     fun save(task: TaskModel){
         viewModelScope.launch {
-            val response = taskRepository.save(task)
-
+            try {
+                val response = taskRepository.save(task)
+                if (response.isSuccessful && response.body() != null){
+                    _taskSaved.value = ValidationModel()
+                }else{
+                    _taskSaved.value = parseErrorMenssage(response)
+                }
+            }catch (e:Exception){
+                _taskSaved.value = handleException(e)
+            }
         }
     }
 }
