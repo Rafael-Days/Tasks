@@ -21,8 +21,24 @@ class TaskRepository(context: Context) : BaseRepository(context) {
         }
     }
 
+    suspend fun update(task: TaskModel): Response<Boolean> {
+        return saveAPICall {
+            remote.update(
+                task.id,
+                task.priorityId,
+                task.description,
+                task.dueDate,
+                task.complete
+            )
+        }
+    }
+
     suspend fun complete(id: Int): Response<Boolean> {
         return saveAPICall { remote.complete(id) }
+    }
+
+    suspend fun load(id: Int):Response<TaskModel>{
+        return saveAPICall {remote.load(id)}
     }
 
     suspend fun undo(id: Int): Response<Boolean> {

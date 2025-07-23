@@ -106,6 +106,7 @@
         android:layout_height="wrap_content"
         android:text="@string/button_add_task"
         app:layout_constraintBottom_toBottomOf="parent"
+        style="@style/DefaultButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

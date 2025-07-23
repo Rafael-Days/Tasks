@@ -2,6 +2,7 @@ package com.devmasterteam.tasks.view
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.TextView
 import androidx.activity.viewModels
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
@@ -32,6 +33,8 @@ class MainActivity : AppCompatActivity() {
 
         // Navegação
         setupNavigation()
+
+        viewModel.loadUserName()
 
         // Observadores
         observe()
@@ -67,5 +70,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun observe() {
+        viewModel.name.observe(this){
+            val header = binding.navView.getHeaderView(0)
+            header.findViewById<TextView>(R.id.text_name).text = it
+        }
     }
 }

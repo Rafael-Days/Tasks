@@ -43,7 +43,7 @@ interface TaskService {
         @Field("Id") id: Int,
         @Field("PriorityId") priorityId: Int,
         @Field("Description") description: String,
-        @Field("DueDate") dueDate: Int,
+        @Field("DueDate") dueDate: String,
         @Field("Complete") complete: Boolean
     ): Response<Boolean>
 

@@ -1,5 +1,6 @@
 package com.devmasterteam.tasks.view
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -34,7 +35,11 @@ class AllTasksFragment : Fragment() {
 
         val taskListener = object : TaskListener {
             override fun onListClick(id: Int) {
-                TODO("Not yet implemented")
+                val intent = Intent(context, TaskFormActivity::class.java)
+                val bundle = Bundle()
+                bundle.putInt(TaskConstants.BUNDLE.TASKID, id)
+                intent.putExtras(bundle)
+                startActivity(intent)
             }
 
             override fun onDeleteClick(id: Int) {
