@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.devmasterteam.tasks.service.constants.TaskConstants
+import com.devmasterteam.tasks.service.helper.BiometricHelper
 import com.devmasterteam.tasks.service.model.ValidationModel
 import com.devmasterteam.tasks.service.repository.PersonRepositoty
 import com.devmasterteam.tasks.service.repository.PriorityRepository
@@ -44,7 +45,7 @@ class LoginViewModel(application: Application) : BaseAndroidViewModel(applicatio
         }
     }
 
-    fun verifyUserLogged() {
+    fun verifyAuthentication() {
         viewModelScope.launch {
             val token = preferencesManager.get(TaskConstants.SHARED.TOKEN_KEY)
             val personKey = preferencesManager.get(TaskConstants.SHARED.PERSON_KEY)
@@ -52,7 +53,7 @@ class LoginViewModel(application: Application) : BaseAndroidViewModel(applicatio
             RetrofitClient.addHeaders(token, personKey)
 
             val logged = (token != "" && personKey != "")
-            _loggedUser.value = logged
+            _loggedUser.value = logged && BiometricHelper.isBiometricAvaliable(getApplication())
 
             if (!logged) {
                 try {

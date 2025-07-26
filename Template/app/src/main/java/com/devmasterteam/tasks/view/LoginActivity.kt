@@ -8,11 +8,13 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.biometric.BiometricPrompt
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
-import androidx.room.Insert
 import com.devmasterteam.tasks.R
 import com.devmasterteam.tasks.databinding.ActivityLoginBinding
 import com.devmasterteam.tasks.viewmodel.LoginViewModel
+import java.util.concurrent.Executor
 
 class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
@@ -35,7 +37,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
             insets
         }
 
-        viewModel.verifyUserLogged()
+        viewModel.verifyAuthentication()
 
         // Eventos
         binding.buttonLogin.setOnClickListener(this)
@@ -64,9 +66,42 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
         viewModel.loggedUser.observe(this){
             if(it){
-                startActivity(Intent(applicationContext, MainActivity::class.java))
+                showAuthentication()
             }
         }
+    }
+
+    private fun showAuthentication(){
+        val executor: Executor = ContextCompat.getMainExecutor(this)
+
+        val biometricPrompt = BiometricPrompt(this, executor,
+            object : BiometricPrompt.AuthenticationCallback() {
+                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                    // Lógica de acordo com a aplicação
+                    super.onAuthenticationSucceeded(result)
+                    startActivity(Intent(applicationContext, MainActivity::class.java))
+                    finish()
+                }
+
+                override fun onAuthenticationFailed() {
+                    super.onAuthenticationFailed()
+                }
+
+                override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                    // Lógica de acordo com a aplicação
+                    super.onAuthenticationError(errorCode, errString)
+                }
+            })
+
+        val info: BiometricPrompt.PromptInfo = BiometricPrompt.PromptInfo.Builder()
+            .setTitle("Impressão Digital")
+            .setSubtitle("Etapa de Segurança")
+            .setDescription("Bota o dedo ai")
+            .setNegativeButtonText("Cancelar")
+            .build()
+
+        // Exibe para o usuário
+        biometricPrompt.authenticate(info)
     }
 
     private fun handleLogin() {
